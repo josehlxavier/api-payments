@@ -1,0 +1,63 @@
+name: Trigger CI/CD Workflow (PR de Fork)
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - main
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Construir a URL RAW do Swagger.yaml (Novo)
+        id: get_raw_urls
+        run: |
+          SWAGGER_NEW_URL="https://raw.githubusercontent.com/${{ github.event.pull_request.head.repo.full_name }}/${{ github.event.pull_request.head.ref }}/swagger.yaml"
+          SWAGGER_OLD_URL="https://raw.githubusercontent.com/${{ github.event.pull_request.base.repo.full_name }}/${{ github.event.pull_request.base.ref }}/swagger.yaml"
+
+          echo "SWAGGER_NEW_URL=$SWAGGER_NEW_URL" >> $GITHUB_ENV
+          echo "OLD_SWAGGER_FILE_URL=$SWAGGER_OLD_URL" >> $GITHUB_ENV
+
+      - name: Capturar Informações do PR
+        run: |
+          echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+          echo "PR_URL=${{ github.event.pull_request.html_url }}" >> $GITHUB_ENV
+          echo "PR_AUTHOR=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
+
+          # Adicionando suporte a multiline para PR_DESCRIPTION
+          {
+            echo 'PR_DESCRIPTION<<EOF'
+            echo "${{ github.event.pull_request.body }}"
+            echo 'EOF'
+          } >> $GITHUB_ENV
+
+      - name: Exibir Variáveis do PR (Debug)
+        run: |
+          echo "Swagger YAML (novo): ${{ env.SWAGGER_NEW_URL }}"
+          echo "Swagger YAML (antigo): ${{ env.OLD_SWAGGER_FILE_URL }}"
+          echo "Título do PR: ${{ env.PR_TITLE }}"
+          echo "Descrição do PR: ${{ env.PR_DESCRIPTION }}"
+          echo "URL do PR: ${{ env.PR_URL }}"
+          echo "Autor do PR: ${{ env.PR_AUTHOR }}"
+
+      - name: Acionar workflow no `repo-ci-cd`
+        run: |
+          PR_DESCRIPTION_CLEANED=$(echo "${{ env.PR_DESCRIPTION }}" | tr '\n' ' ' | tr -d '\r' | jq -Rs .)
+
+          curl -X POST -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.REPO_ACCESS_TOKEN }}" \
+            https://api.github.com/repos/OpenBanking-Brasil/CI-CD-OFB/actions/workflows/pr-validation-and-jira.yml/dispatches \
+            -d "{
+              \"ref\": \"main\",
+              \"inputs\": {
+                \"SWAGGER_FILE_URL\": \"${{ env.SWAGGER_NEW_URL }}\",
+                \"OLD_SWAGGER_FILE_URL\": \"${{ env.OLD_SWAGGER_FILE_URL }}\",
+                \"PR_TITLE\": \"${{ env.PR_TITLE }}\",
+                \"PR_DESCRIPTION\": $PR_DESCRIPTION_CLEANED,
+                \"PR_URL\": \"${{ env.PR_URL }}\",
+                \"PR_AUTHOR\": \"${{ env.PR_AUTHOR }}\"
+              }
+            }"

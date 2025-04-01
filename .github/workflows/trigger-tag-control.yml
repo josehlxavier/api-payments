@@ -1,0 +1,33 @@
+name: Trigger Remote Workflow
+
+on:
+  pull_request_target:
+    types:
+      - closed
+
+jobs:
+  trigger-remote-workflow:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Read Swagger version and title
+        id: swagger_info
+        run: |
+          VERSION=$(grep 'version:' swagger.yaml | awk '{print $2}')
+          TITLE=$(awk '/^info:/ {found=1} found && /title:/ {sub(/title: /, ""); print; exit}' swagger.yaml | xargs)
+          echo "Swagger version: $VERSION"
+          echo "Swagger title: $TITLE"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "TITLE=$TITLE" >> $GITHUB_ENV
+
+      - name: Trigger remote workflow
+        run: |
+          curl -X POST -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: Bearer ${{ secrets.REPO_ACCESS_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d "{\"ref\": \"main\", \"inputs\": {\"repository\": \"${{ github.repository }}\", \"branch\": \"${{ github.event.pull_request.base.ref }}\", \"version\": \"$VERSION\", \"title\": \"$TITLE\", \"pr_number\": \"${{ github.event.pull_request.number }}\"}}" \
+          "https://api.github.com/repos/OpenBanking-Brasil/CI-CD-OFB/actions/workflows/tag-control.yml/dispatches"
