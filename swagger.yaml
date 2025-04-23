@@ -518,11 +518,6 @@ paths:
       tags:
         - Pagamentos
       summary: Cancelar todos os pagamentos referentes ao mesmo Consentimento.
-      deprecated: true
-      x-deprecation-info:
-        reason: "Path será substituido por '/consents/{consentId}/pix/payments'"
-        sunset-date: "2026-05-20"
-        removal-version: "5.0.0"
       operationId: paymentsPatchPixPaymentsConsentId
       description: |
         Esse endpoint deve ser usado para cancelar, a pedido do cliente pagador, as transações que estejam em uma das seguintes situações: Agendada com sucesso (SCHD) ou retida para análise (PDNG).
