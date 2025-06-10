@@ -1759,8 +1759,47 @@ components:
           pattern: '^([A-Z]{3})$'
           example: BRL
           description: |
-            Código da moeda nacional segundo modelo ISO-4217, ou seja, 'BRL'.  
+            Código da moeda nacional segundo modelo ISO-4217, ou seja, 'BRL'.
             Todos os valores monetários informados estão representados com a moeda vigente do Brasil.
+        charges:
+          $ref: '#/components/schemas/PaymentPixCharges'
+
+    PaymentPixCharges:
+      type: object
+      description: Objeto que detalha juros, multa, descontos e abatimentos aplicados ao pagamento.
+      properties:
+        interest:
+          type: object
+          properties:
+            amount:
+              type: string
+              pattern: '^\\d{1,10}\\.\\d{2}$'
+              example: '2.00'
+              description: Valor de juros aplicados.
+        fine:
+          type: object
+          properties:
+            amount:
+              type: string
+              pattern: '^\\d{1,10}\\.\\d{2}$'
+              example: '3.00'
+              description: Valor de multa aplicada.
+        discount:
+          type: object
+          properties:
+            amount:
+              type: string
+              pattern: '^\\d{1,10}\\.\\d{2}$'
+              example: '1.00'
+              description: Valor do desconto concedido.
+        rebate:
+          type: object
+          properties:
+            amount:
+              type: string
+              pattern: '^\\d{1,10}\\.\\d{2}$'
+              example: '0.50'
+              description: Valor do abatimento concedido.
     PatchPixPayment:
       type: object
       required:
