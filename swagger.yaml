@@ -117,8 +117,10 @@ info:
           &emsp;2.2.2.8 Detalhes do pagamento: Valida se determinado parâmetro informado obedece às regras de negócio (DETALHE_PAGAMENTO_INVALIDO);  
           &emsp;2.2.2.9 Demais validações não explicitamente informadas (ex. suspeita de fraude): (NAO_INFORMADO);  
           &emsp;2.2.2.10 Idempotência: Valida se há divergência entre chave de idempotência e informações enviadas (ERRO_IDEMPOTENCIA);  
-          &emsp;2.2.2.11 Consentimento pendente de autorização: Em `PARTIALLY_ACCEPTED` aguardando aprovação de múltiplas alçadas. Não consome nem invalida o consentimento (CONSENTIMENTO_PENDENTE_AUTORIZACAO).  
-      2.3 **Casos de erro para validações síncronas no DICT**  
+          &emsp;2.2.2.11 Consentimento pendente de autorização: Em `PARTIALLY_ACCEPTED` aguardando aprovação de múltiplas alçadas. Não consome nem invalida o consentimento (CONSENTIMENTO_PENDENTE_AUTORIZACAO);
+          &emsp;2.2.2.12 Encargos do pagamento: Valida se juros, multa, descontos e abatimentos seguem o schema definido (DETALHE_PAGAMENTO_INVALIDO);
+          &emsp;2.2.2.13 Data limite pós-vencimento: Valida se `latePaymentLimitDate` respeita as regras do arranjo (DETALHE_PAGAMENTO_INVALIDO);
+      2.3 **Casos de erro para validações síncronas no DICT**
         &ensp;Nesse cenário, o pagamento não é criado, porém o consentimento deve ser alterado para o status CONSUMED Retorno esperado do endpoint POST/Payments: HTTP Code 422 - Unprocessable Entity:  
         &ensp;• Erro por dados inválidos: Conforme item **2.2.2.8**  
         &ensp;• Erro por suspeita de fraude: Conforme item **2.2.2.9**  
@@ -140,8 +142,10 @@ info:
         &ensp;4.1.8 Demais validações não explicitamente informadas (ex. suspeita de fraude): (NAO_INFORMADO);  
         &ensp;4.1.9 Validação SPI: Externaliza validações no SPI (PAGAMENTO_RECUSADO_SPI);  
         &ensp;4.1.10 Falha em agendamentos: Uma ou mais incidências de pagamento não foram possíveis de ser agendadas (FALHA_AGENDAMENTO_PAGAMENTOS);  
-        &ensp;4.1.11 Divergências entre dados das chaves pix para agendamento e liquidação: O pagamento agendado não pode ser enviado para liquidação devido a divergências entre dados da chave recebedora utilizada para criação do agendamento com a chave recebedora em momento de liquidação (CHAVE_PIX_DIVERGENTE_AGENDAMENTO_LIQUIDACAO).  
-      4.2 **Casos de erro para validações assíncronas no DICT**  
+        &ensp;4.1.11 Divergências entre dados das chaves pix para agendamento e liquidação: O pagamento agendado não pode ser enviado para liquidação devido a divergências entre dados da chave recebedora utilizada para criação do agendamento com a chave recebedora em momento de liquidação (CHAVE_PIX_DIVERGENTE_AGENDAMENTO_LIQUIDACAO);
+        &ensp;4.1.12 Encargos do pagamento: Valida se juros, multa, descontos e abatimentos seguem o schema definido (DETALHE_PAGAMENTO_INVALIDO);
+        &ensp;4.1.13 Data limite pós-vencimento: Valida se `latePaymentLimitDate` respeita as regras do arranjo (DETALHE_PAGAMENTO_INVALIDO);
+      4.2 **Casos de erro para validações assíncronas no DICT**
         &ensp;Neste cenário o pagamento é criado com sucesso (status RCVD) e o consentimento é consumido (status CONSUMED), porém, as validações contra o DICT só ocorrerão de forma assíncrona e em caso de negativa será percebido pela iniciadora na consulta do pagamento (GET /Payments).  
         &ensp;Retorno esperado do endpoint GET /Payments: HTTP Code 200 - OK.  
         &ensp;Status do Pagamento: RJCT (Rejected), com as seguintes opções rejectionReason:  
@@ -1761,6 +1765,18 @@ components:
           description: |
             Código da moeda nacional segundo modelo ISO-4217, ou seja, 'BRL'.
             Todos os valores monetários informados estão representados com a moeda vigente do Brasil.
+        dueDate:
+          type: string
+          format: date
+          pattern: '^(\\d{4})-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$'
+          example: '2025-12-31'
+          description: Data de vencimento do pagamento.
+        latePaymentLimitDate:
+          type: string
+          format: date
+          pattern: '^(\\d{4})-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$'
+          example: '2026-01-05'
+          description: Último dia para pagamento após o vencimento. Juros são calculados até esta data.
         charges:
           $ref: '#/components/schemas/PaymentPixCharges'
 
@@ -1770,7 +1786,13 @@ components:
       properties:
         interest:
           type: object
+          required: [modality, amount]
           properties:
+            modality:
+              type: integer
+              minimum: 1
+              maximum: 8
+              description: Modalidade de juros
             amount:
               type: string
               pattern: '^\\d{1,10}\\.\\d{2}$'
@@ -1778,7 +1800,13 @@ components:
               description: Valor de juros aplicados.
         fine:
           type: object
+          required: [modality, amount]
           properties:
+            modality:
+              type: integer
+              minimum: 1
+              maximum: 2
+              description: Modalidade de multa
             amount:
               type: string
               pattern: '^\\d{1,10}\\.\\d{2}$'
@@ -1786,15 +1814,49 @@ components:
               description: Valor de multa aplicada.
         discount:
           type: object
+          required: [modality]
           properties:
-            amount:
-              type: string
-              pattern: '^\\d{1,10}\\.\\d{2}$'
-              example: '1.00'
-              description: Valor do desconto concedido.
+            modality:
+              type: integer
+              minimum: 1
+              maximum: 6
+              description: Modalidade de desconto
+          oneOf:
+            - type: object
+              properties:
+                descontoDataFixa:
+                  type: array
+                  minItems: 1
+                  maxItems: 3
+                  uniqueItems: true
+                  items:
+                    type: object
+                    required: [date, amount]
+                    properties:
+                      date:
+                        type: string
+                        format: date
+                        description: Data limite para o desconto absoluto
+                      amount:
+                        type: string
+                        pattern: '^\\d{1,10}\\.\\d{2}$'
+                        description: Valor ou percentual do desconto
+            - type: object
+              required: [amount]
+              properties:
+                amount:
+                  type: string
+                  pattern: '^\\d{1,10}\\.\\d{2}$'
+                  description: Valor ou percentual do desconto
         rebate:
           type: object
+          required: [modality, amount]
           properties:
+            modality:
+              type: integer
+              minimum: 1
+              maximum: 2
+              description: Modalidade de abatimento
             amount:
               type: string
               pattern: '^\\d{1,10}\\.\\d{2}$'
