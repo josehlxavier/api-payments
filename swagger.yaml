@@ -2911,7 +2911,7 @@ components:
     startDate:
       name: startDate
       in: query
-      description: Data inicial de corte, incluindo o dia informado, da ocorrência do pagamento ligada ao consentimento.
+      description: Data inicial de corte, incluindo o dia informado, para recuperação do pagamento ligado ao consentimento.
       required: false
       schema:
         type: string
@@ -2923,7 +2923,7 @@ components:
     endDate:
       name: endDate
       in: query
-      description: Data final de corte, incluindo o dia informado, para recuperação do pagamento ligada ao consentimento.
+      description: Data final de corte, incluindo o dia informado, da ocorrência do pagamento ligada ao consentimento.
       required: false
       schema:
         format: date
