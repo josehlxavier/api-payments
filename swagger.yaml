@@ -197,7 +197,7 @@ info:
       ## Quantidade máxima permitida para agendamentos recorrentes
       A quantidade máxima de pagamentos que podem transitar do iniciador para o detentor são de 60 pagamentos, independente do modelo de recorrência definido no consentimento, respeitando o prazo máximo de dois anos para agendamentos. 
       Caso a opção de recorrência enviada pelo iniciador não respeite a regra acima, o detentor deve retornar o erro 422 "PARAMETRO_INVALIDO" com o detalhe "Quantidade permitida de pagamentos excedida". 
-  version: 4.1.0
+  version: 4.1.0-rc.1
   license:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
@@ -1348,7 +1348,7 @@ components:
 
         6.  ACSC (Accepted Settlement Completed Debitor Account) - Indica que a transação foi efetivada pela detentora ou pelo SPI.
 
-        7.  PDNG (Pending) - Indica que a detentora reteve temporariamente a transação Pix para análise.
+        7.  PDNG (Pending) - Indica que a detentora reteve temporariamente a transação Pix para análise. Não se aplica quando a conta recebedora e a pagadora possuem a mesma titularidade.
 
         8.  SCHD (Scheduled) - Indica que a transação Pix foi agendada com sucesso na detentora.
 
