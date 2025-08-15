@@ -883,7 +883,7 @@ components:
         additionalInformation:
           type: string
           description: |
-            Texto livre para Iniciador preencher de forma compreensível pelo usuário aprovador/pagador. 
+            Texto livre para o Iniciador descrever de forma compreensível pelo usuário aprovador/pagador as características do agendamento solicitado.  
             O texto pode ser utilizado pelo detentor para exibição do resumo da transação durante aprovação do usuário aprovador/pagador.
           pattern: '[\w\W\s]*'
           maxLength: 255
