@@ -2377,15 +2377,8 @@ components:
           pattern: '[\w\W\s]*'
           example: '12345678901'
           description: |
-            Chave cadastrada no DICT pertencente ao recebedor. Os tipos de chaves podem ser: telefone, e-mail, cpf/cnpj ou chave aleatória.
-            No caso de telefone celular deve ser informado no padrão E.1641.
-            Para e-mail deve ter o formato xxxxxxxx@xxxxxxx.xxx(.xx) e no máximo 77 caracteres.
-            No caso de CPF deverá ser informado com 11 números, sem pontos ou traços.
-            Para o caso de CNPJ deverá ser informado com 14 números, sem pontos ou traços.
-            No caso de chave aleatória deve ser informado o UUID gerado pelo DICT, conforme formato especificado na RFC41223.
-            Se informado, a detentora da conta deve validar o proxy no DICT quando localInstrument for igual a DICT, QRDN ou QRES e validar o campo creditorAccount.
-            Esta validação é opcional caso o localInstrument for igual a INIC.
-            [Restrição] Se localInstrument for igual a MANU, o campo proxy não deve ser preenchido. Se localInstrument for igual INIC, DICT, QRDN ou QRES, o campo proxy deve ser sempre preenchido com a chave Pix.
+            Chave cadastrada no DICT pertencente ao recebedor. Os tipos de chaves podem ser: telefone, e-mail, CPF/CNPJ ou chave aleatória. No caso de telefone celular, deve ser informado no padrão E.1641. Para e-mail, deve ter o formato xxxxxxxx@xxxxxxx.xxx(.xx), com no máximo 77 caracteres. Para CPF, deverá ser informado com 11 números, sem pontos ou traços. Para o caso de CNPJ, deverá ser informado com 14 caracteres, sem pontos ou traços. No caso de chave aleatória, deve ser informado o UUID gerado pelo DICT, conforme formato especificado na RFC 4122. Se informado, a detentora da conta deve validar o proxy no DICT quando localInstrument for igual a DICT, APDN, QRDN ou QRES e também validar o campo creditorAccount. Esta validação é opcional caso o localInstrument for igual a INIC.   
+            [Restrição] Se localInstrument for igual a MANU, o campo proxy não deve ser preenchido. Se localInstrument  for igual INIC, DICT, APDN, QRDN ou QRES, o campo proxy deve ser sempre preenchido com a chave Pix  
         ibgeTownCode:
           type: string
           minLength: 7
@@ -2520,15 +2513,8 @@ components:
                 pattern: '[\w\W\s]*'
                 example: '12345678901'
                 description: |
-                  Chave cadastrada no DICT pertencente ao recebedor. Os tipos de chaves podem ser: telefone, e-mail, cpf/cnpj ou chave aleatória.
-                  No caso de telefone celular deve ser informado no padrão E.1641.
-                  Para e-mail deve ter o formato xxxxxxxx@xxxxxxx.xxx(.xx) e no máximo 77 caracteres.
-                  No caso de CPF deverá ser informado com 11 números, sem pontos ou traços.
-                  Para o caso de CNPJ deverá ser informado com 14 números, sem pontos ou traços.
-                  No caso de chave aleatória deve ser informado o UUID gerado pelo DICT, conforme formato especificado na RFC41223.
-                  Se informado, a detentora da conta deve validar o proxy no DICT quando localInstrument for igual a DICT, QRDN ou QRES e validar o campo creditorAccount.
-                  Esta validação é opcional caso o localInstrument for igual a INIC.
-                  [Restrição] Se localInstrument for igual a MANU, o campo proxy não deve ser preenchido. Se localInstrument for igual INIC, DICT, QRDN ou QRES, o campo proxy deve ser sempre preenchido com a chave Pix.
+                  Chave cadastrada no DICT pertencente ao recebedor. Os tipos de chaves podem ser: telefone, e-mail, CPF/CNPJ ou chave aleatória. No caso de telefone celular, deve ser informado no padrão E.1641. Para e-mail, deve ter o formato xxxxxxxx@xxxxxxx.xxx(.xx), com no máximo 77 caracteres. Para CPF, deverá ser informado com 11 números, sem pontos ou traços. Para o caso de CNPJ, deverá ser informado com 14 caracteres, sem pontos ou traços. No caso de chave aleatória, deve ser informado o UUID gerado pelo DICT, conforme formato especificado na RFC 4122. Se informado, a detentora da conta deve validar o proxy no DICT quando localInstrument for igual a DICT, APDN, QRDN ou QRES e também validar o campo creditorAccount. Esta validação é opcional caso o localInstrument for igual a INIC.   
+                  [Restrição] Se localInstrument for igual a MANU, o campo proxy não deve ser preenchido. Se localInstrument  for igual INIC, DICT, APDN, QRDN ou QRES, o campo proxy deve ser sempre preenchido com a chave Pix  
               ibgeTownCode:
                 type: string
                 minLength: 7
@@ -2679,15 +2665,8 @@ components:
           pattern: '[\w\W\s]*'
           example: '12345678901'
           description: |
-            Chave cadastrada no DICT pertencente ao recebedor. Os tipos de chaves podem ser: telefone, e-mail, cpf/cnpj ou chave aleatória.
-            No caso de telefone celular deve ser informado no padrão E.1641.
-            Para e-mail deve ter o formato xxxxxxxx@xxxxxxx.xxx(.xx) e no máximo 77 caracteres.
-            No caso de CPF deverá ser informado com 11 números, sem pontos ou traços.
-            Para o caso de CNPJ deverá ser informado com 14 números, sem pontos ou traços.
-            No caso de chave aleatória deve ser informado o UUID gerado pelo DICT, conforme formato especificado na RFC41223.
-            Se informado, a detentora da conta deve validar o proxy no DICT quando localInstrument for igual a DICT, QRDN ou QRES e validar o campo creditorAccount.
-            Esta validação é opcional caso o localInstrument for igual a INIC.
-            [Restrição] Se localInstrument for igual a MANU, o campo proxy não deve ser preenchido. Se localInstrument for igual INIC, DICT, QRDN ou QRES, o campo proxy deve ser sempre preenchido com a chave Pix.
+            Chave cadastrada no DICT pertencente ao recebedor. Os tipos de chaves podem ser: telefone, e-mail, CPF/CNPJ ou chave aleatória. No caso de telefone celular, deve ser informado no padrão E.1641. Para e-mail, deve ter o formato xxxxxxxx@xxxxxxx.xxx(.xx), com no máximo 77 caracteres. Para CPF, deverá ser informado com 11 números, sem pontos ou traços. Para o caso de CNPJ, deverá ser informado com 14 caracteres, sem pontos ou traços. No caso de chave aleatória, deve ser informado o UUID gerado pelo DICT, conforme formato especificado na RFC 4122. Se informado, a detentora da conta deve validar o proxy no DICT quando localInstrument for igual a DICT, APDN, QRDN ou QRES e também validar o campo creditorAccount. Esta validação é opcional caso o localInstrument for igual a INIC.   
+            [Restrição] Se localInstrument for igual a MANU, o campo proxy não deve ser preenchido. Se localInstrument  for igual INIC, DICT, APDN, QRDN ou QRES, o campo proxy deve ser sempre preenchido com a chave Pix  
         ibgeTownCode:
           type: string
           minLength: 7
