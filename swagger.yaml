@@ -854,8 +854,6 @@ components:
               $ref: '#/components/schemas/BusinessEntity'
             creditor:
               $ref: '#/components/schemas/Identification'
-            payloadJWS:
-              $ref: '#/components/schemas/PayloadJWS'
             payment:
               type: object
               description: Objeto contendo dados de pagamento para consentimento.
@@ -1157,6 +1155,8 @@ components:
         - localInstrument
         - creditorAccount
       properties:
+        payloadJWS:
+          $ref: '#/components/schemas/PayloadJWS'
         localInstrument:
           $ref: '#/components/schemas/EnumLocalInstrument'
         qrCode:
@@ -2044,8 +2044,6 @@ components:
               $ref: '#/components/schemas/BusinessEntity'
             creditor:
               $ref: '#/components/schemas/Identification'
-            payloadJWS:
-              $ref: '#/components/schemas/PayloadJWS'
             payment:
               $ref: '#/components/schemas/PaymentConsent'
             debtorAccount:
@@ -2179,8 +2177,6 @@ components:
               $ref: '#/components/schemas/BusinessEntity'
             creditor:
               $ref: '#/components/schemas/Identification'
-            payloadJWS:
-              $ref: '#/components/schemas/PayloadJWS'
             payment:
               type: object
               description: Objeto contendo dados de pagamento para consentimento.
