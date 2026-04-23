@@ -219,7 +219,7 @@ info:
       ## Quantidade máxima permitida para agendamentos recorrentes
       A quantidade máxima de pagamentos que podem transitar do iniciador para o detentor são de 60 pagamentos, independente do modelo de recorrência definido no consentimento, respeitando o prazo máximo de dois anos para agendamentos. 
       Caso a opção de recorrência enviada pelo iniciador não respeite a regra acima, o detentor deve retornar o erro 422 "PARAMETRO_INVALIDO" com o detalhe "Quantidade permitida de pagamentos excedida". 
-  version: 5.0.0-rc.1
+  version: 5.0.0
   license:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
@@ -228,9 +228,9 @@ info:
     email: gt-interfaces@openbankingbr.org
     url: 'https://openbanking-brasil.github.io/areadesenvolvedor/'
 servers:
-  - url: 'https://api.banco.com.br/open-banking/payments/v4'
+  - url: 'https://api.banco.com.br/open-banking/payments/v5'
     description: Servidor de Produção
-  - url: 'https://apih.banco.com.br/open-banking/payments/v4'
+  - url: 'https://apih.banco.com.br/open-banking/payments/v5'
     description: Servidor de Homologação
 tags:
   - name: Pagamentos
@@ -2680,12 +2680,8 @@ components:
               pattern: '^(\d{4})-(1[0-2]|0?[1-9])-(3[01]|[12][0-9]|0?[1-9])$'
               example: '2023-08-23'
               description: |
-                Define a data alvo da liquidação do pagamento.
-                O fuso horário de Brasília deve ser utilizado para criação e racionalização sobre os dados deste campo.
-
-                [Restrição] Esse campo deverá sempre ser no mínimo D+1 corrido, ou seja, a data imediatamente posterior em 
-                relação a data do consentimento considerando o fuso horário de Brasília e deverá ser no máximo D+730 corridos a 
-                partir da data do consentimento, também considerando o fuso horário de Brasília.
+                Define a data alvo da liquidação do pagamento. O fuso horário de Brasília deve ser utilizado para criação e racionalização sobre os dados deste campo.  
+                [Restrição] Esse campo deverá sempre ser no mínimo D+1 corrido, ou seja, a data imediatamente posterior em relação à data de criação do consentimento. O prazo máximo admitido para agendamento é de dois anos, contados a partir da data de criação do consentimento, limitando-se ao dia e mês correspondentes no segundo ano subsequente (Ex.: consentimento criado em 10/07/2026 permite agendamento até 10/07/2028).
     ScheduleDaily:
       type: object
       required:
