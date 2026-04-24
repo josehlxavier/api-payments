@@ -62,6 +62,7 @@ info:
     - A partir da versão 5.0.0 da API Pagamentos passa a ser possível a realização de Saques e Trocos através das funcionalidades disponíveis para tal no arranjo Pix. Para a realização das operações, as ITPs devem passar a reportar o payloadJWS completo que foi gerado pelo PSP do Recebedor, o qual contém todos os dados necessários para a validação das informações da operação em questão.  
     - Ao receber um pedido de criação de consentimento que esteja marcado como ```WITHDRAW``` ou ```CHANGE``` no campo ```/data/payment/purpose```, o PSP do Pagador (Detentor) deverá consultar os dados do agente e do facilitador do serviço dentro do payloadJWS enviado pelo ITP, assim como os outros dados pertinentes a operação solicitada.  
     - A identificação também deverá ser realizada pelo PSP do Pagador ao enviar a mensagem ```PACS.008``` ao SPI, com a marcação correta da finalidade da transação sendo realizada, bem como outras informações necessárias para a correta liquidação da operação de Saque ou Troco.  
+    - Apenas pagamentos iniciados por usuários com plenos poderes de aprovação (que não necessitam de outras aprovações para autorização do consentimento) são permitidos. Pagamentos dependentes de múltiplas alçadas aprovadoras devem ter o consentimento rejeitado, após a autorização do primeiro aprovador, com o motivo PERMISSAO_INSUFICIENTE.  
     - Outras regras que devem ser observadas durante a validação e liquidação do QRCode de Pix Saque ou Pix Troco podem ser encontrados no Manual de Padrões para Iniciação do Pix, disponível no site do Banco Central.
 
     ## Validações
@@ -174,6 +175,7 @@ info:
         &ensp;5.1.10 - Não informado: Demais validações não explicitamente informadas (ex. suspeita de fraude) e consentimentos rejeitados em versões que não existiam o campo rejectionReason na API de Pagamentos (NAO_INFORMADO)  
         &ensp;5.1.11 - Tempo expirado consumo: O usuário não finalizou o fluxo de pagamento e o consentimento expirou (TEMPO_EXPIRADO_CONSUMO).   
         &ensp;5.1.12 - Autenticação divergente: O usuário autenticado no ambiente da detentora não é o mesmo usuário autenticado no ambiente da iniciadora e que criou o consentimento (AUTENTICACAO_DIVERGENTE).   
+        &ensp;5.1.13 - Permissão insuficiente: A solicitação de Saque ou Troco foi realizada por um usuário sem plenos poderes de aprovação (PERMISSAO_INSUFICIENTE).  
       5.2 **[Momentos obrigatórios de validação dos rejectionReasons de acordo com o funil de consentimentos.](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/150863940) Para casos em que um consentimento for rejeitado por mais de um motivo, seguir a ordem de prioridade da tabela.**
       ```
       |----------------------------------|------------------------------|---------------------|
@@ -217,9 +219,10 @@ info:
       - O _PATCH /consents/{consentId}/pix/payments_ deve ser utilizado no cancelamento de todas as ocorrências de pagamentos agendados presentes em uma recorrência de pagamentos. Todos os pagamentos associados ao consentimento informado e passíveis de cancelamento (ainda não liquidados, com os status PDNG e SCHD) deverão ser cancelados.
       
       ## Quantidade máxima permitida para agendamentos recorrentes
-      - A quantidade máxima de pagamentos que podem transitar do iniciador para o detentor é de 60 pagamentos, independentemente do modelo de recorrência definido no consentimento. A data do último pagamento agendado não pode ultrapassar o correspondente dia e mês do segundo ano subsequente à data de criação do consentimento (Ex.: consentimento criado em 15/03/2026 admite agendamentos até 15/03/2028).  
-      - Caso a opção de recorrência enviada pelo iniciador não respeite essa regra, o detentor deve retornar o erro 422 "PARAMETRO_INVALIDO" com o detalhe "Quantidade permitida de pagamentos excedida". 
-  version: 5.0.0-rc.1
+
+      A quantidade máxima de pagamentos que podem transitar do iniciador para o detentor são de 60 pagamentos, independente do modelo de recorrência definido no consentimento, respeitando o prazo máximo de dois anos para agendamentos. 
+      Caso a opção de recorrência enviada pelo iniciador não respeite a regra acima, o detentor deve retornar o erro 422 "PARAMETRO_INVALIDO" com o detalhe "Quantidade permitida de pagamentos excedida". 
+  version: 5.0.0
   license:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0'
@@ -228,9 +231,9 @@ info:
     email: gt-interfaces@openbankingbr.org
     url: 'https://openbanking-brasil.github.io/areadesenvolvedor/'
 servers:
-  - url: 'https://api.banco.com.br/open-banking/payments/v4'
+  - url: 'https://api.banco.com.br/open-banking/payments/v5'
     description: Servidor de Produção
-  - url: 'https://apih.banco.com.br/open-banking/payments/v4'
+  - url: 'https://apih.banco.com.br/open-banking/payments/v5'
     description: Servidor de Homologação
 tags:
   - name: Pagamentos
@@ -1442,6 +1445,7 @@ components:
         - SALDO_INSUFICIENTE
         - VALOR_ACIMA_LIMITE
         - QRCODE_INVALIDO
+        - PERMISSAO_INSUFICIENTE
       example: SALDO_INSUFICIENTE
       description: |
         Define o código da razão pela qual o consentimento foi rejeitado
@@ -1457,6 +1461,7 @@ components:
         - SALDO_INSUFICIENTE
         - VALOR_ACIMA_LIMITE
         - QRCODE_INVALIDO
+        - PERMISSAO_INSUFICIENTE
     EnumRejectionReasonTypeGetPix:
       type: string
       enum:
@@ -1651,6 +1656,7 @@ components:
             - SALDO_INSUFICIENTE: A conta selecionada não possui saldo suficiente para realizar o pagamento.
             - VALOR_ACIMA_LIMITE: O valor ultrapassa o limite estabelecido [na instituição/no arranjo/outro] para permitir a realização de transações pelo cliente.
             - QRCODE_INVALIDO: O QRCode utilizado para a iniciação de pagamento não é válido. 
+            - PERMISSAO_INSUFICIENTE: A solicitação de Saque ou Troco foi realizada por um usuário sem plenos poderes de aprovação.   
 
             [Restrição] Caso consentimento rejeitado de versões nas quais não havia o campo rejectionReason retornar o seguinte detail: Motivo de rejeição inexistente em versões anteriores.
           example: O usuário rejeitou a autorização do consentimento 
