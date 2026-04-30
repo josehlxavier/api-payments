@@ -735,6 +735,17 @@ components:
                   • PROPOSITO_INVALIDO: O propósito informado é incompatível com os dados presentes na transação.
         meta:
           $ref: '#/components/schemas/Meta'
+    IbgeTownCode:
+      type: string
+      minLength: 7
+      maxLength: 7
+      pattern: '^\d{7}$'
+      example: '5300108'
+      description: |
+        O campo ibgetowncode, no arranjo PIX, tem o mesmo comportamento que o campo codMun descrito no manual do PIX.  
+        Caso a informação referente ao município não seja enviada; o PSP do recebedor assumirá que não existem feriados estaduais e municipais no período em questão;  
+        No caso de QRCode Dinâmico com vencimento, deve prevalecer o código do município do usuário pagador informado pelo prestador do serviço de iniciação.   
+        [Restrição] Para QRCode Dinâmico com vencimento é obrigatório o envio desse parâmetro pelo ITP para que o Detentor possa utiliza-lo em sua consulta. É obrigatório que o Detentor utilize o valor informado pelo ITP em sua consulta ao QRCode no PSP Recebedor
     Amount:
       type: string
       minLength: 4
@@ -957,15 +968,7 @@ components:
                 amount:
                   $ref: '#/components/schemas/Amount'
                 ibgeTownCode:
-                  type: string
-                  minLength: 7
-                  maxLength: 7
-                  pattern: '^\d{7}$'
-                  example: '5300108'
-                  description: |
-                    O campo ibgetowncode, no arranjo PIX, tem o mesmo comportamento que o campo codMun descrito no manual do PIX.  
-                    Caso a informação referente ao município não seja enviada; o PSP do recebedor assumirá que não existem feriados estaduais e municipais no período em questão;  
-                    No caso de QRCode Dinâmico com vencimento, deve prevalecer o código do município do usuário pagador informado pelo prestador do serviço de iniciação.  
+                  $ref: "#/components/schemas/IbgeTownCode"
                 details:
                   $ref: '#/components/schemas/Details'
             debtorAccount:
@@ -1826,15 +1829,7 @@ components:
         amount:
           $ref: '#/components/schemas/Amount'
         ibgeTownCode:
-          type: string
-          minLength: 7
-          maxLength: 7
-          pattern: '^\d{7}$'
-          example: '5300108'
-          description: |
-            O campo ibgetowncode, no arranjo PIX, tem o mesmo comportamento que o campo codMun descrito no manual do PIX.  
-            Caso a informação referente ao município não seja enviada; o PSP do recebedor assumirá que não existem feriados estaduais e municipais no período em questão;  
-            No caso de QRCode Dinâmico com vencimento, deve prevalecer o código do município do usuário pagador informado pelo prestador do serviço de iniciação.  
+          $ref: "#/components/schemas/IbgeTownCode"
         details:
           $ref: '#/components/schemas/Details'
     PaymentPix:
@@ -2281,15 +2276,7 @@ components:
                 amount:
                   $ref: '#/components/schemas/Amount'
                 ibgeTownCode:
-                  type: string
-                  minLength: 7
-                  maxLength: 7
-                  pattern: '^\d{7}$'
-                  example: '5300108'
-                  description: |
-                    O campo ibgetowncode, no arranjo PIX, tem o mesmo comportamento que o campo codMun descrito no manual do PIX.  
-                    Caso a informação referente ao município não seja enviada; o PSP do recebedor assumirá que não existem feriados estaduais e municipais no período em questão;  
-                    No caso de QRCode Dinâmico com vencimento, deve prevalecer o código do município do usuário pagador informado pelo prestador do serviço de iniciação.  
+                  $ref: "#/components/schemas/IbgeTownCode"
                 details:
                   $ref: '#/components/schemas/Details'
             debtorAccount:
